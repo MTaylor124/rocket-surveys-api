@@ -9,6 +9,8 @@ const exampleRoutes = require('./app/routes/example_routes')
 const userRoutes = require('./app/routes/user_routes')
 const surveyRoutes = require('./app/routes/survey_routes')
 const responseRoutes = require('./app/routes/response_routes')
+// const openSurveyRoutes = require('./app/routes/survey_routes')
+// const openResponseRoutes = require('./app/routes/response_routes')
 
 // require error handling middleware
 const errorHandler = require('./lib/error_handler')
