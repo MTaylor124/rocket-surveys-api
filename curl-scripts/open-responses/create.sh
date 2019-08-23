@@ -11,7 +11,7 @@ curl "${API}${URL_PATH}" \
   --data '{
     "openresponse": {
       "answer": "'"${ANSWER}"'",
-      "opensurvey": "'"${SURVEY}"'"
+      "openSurvey": "'"${OPENSURVEY}"'"
     }
   }'
 

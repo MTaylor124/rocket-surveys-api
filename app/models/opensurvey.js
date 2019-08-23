@@ -11,7 +11,7 @@ const openSurveySchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  openresponses: [{
+  openResponses: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'OpenResponse'
   }]
