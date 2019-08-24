@@ -12,6 +12,9 @@ const responseRoutes = require('./app/routes/response_routes')
 const openSurveyRoutes = require('./app/routes/open_survey_routes')
 const openResponseRoutes = require('./app/routes/open_response_routes')
 
+const questionRoutes = require('./app/routes/question_routes')
+const paragraphRoutes = require('./app/routes/paragraph_routes')
+
 // require error handling middleware
 const errorHandler = require('./lib/error_handler')
 
@@ -68,6 +71,10 @@ app.use(surveyRoutes)
 app.use(openSurveyRoutes)
 app.use(responseRoutes)
 app.use(openResponseRoutes)
+
+app.use(questionRoutes)
+app.use(paragraphRoutes)
+
 // register error handling middleware
 // note that this comes after the route middlewares, because it needs to be
 // passed any error messages from them

@@ -3,8 +3,8 @@ const express = require('express')
 // Passport docs: http://www.passportjs.org/docs/
 const passport = require('passport')
 
-// pull in Mongoose model for opensurveys
-const OpenSurvey = require('../models/opensurvey')
+// pull in Mongoose model for questions
+const Question = require('../models/question')
 
 // this is a collection of methods that help us detect situations when we need
 // to throw a custom error
@@ -29,14 +29,14 @@ const router = express.Router()
 
 // CREATE
 // POST /examples
-router.post('/opensurveys', requireToken, (req, res, next) => {
-  // set owner of new opensurvey to be current user
-  req.body.opensurvey.owner = req.user.id
+router.post('/questions', requireToken, (req, res, next) => {
+  // set owner of new question to be current user
+  req.body.question.owner = req.user.id
 
-  OpenSurvey.create(req.body.opensurvey)
-    // respond to succesful `create` with status 201 and JSON of new "opensurvey"
-    .then(opensurvey => {
-      res.status(201).json({ opensurvey: opensurvey.toObject() })
+  Question.create(req.body.question)
+    // respond to succesful `create` with status 201 and JSON of new "question"
+    .then(question => {
+      res.status(201).json({ question: question.toObject() })
     })
     // if an error occurs, pass it off to our error handler
     // the error handler needs the error message and the `res` object so that it
@@ -45,49 +45,49 @@ router.post('/opensurveys', requireToken, (req, res, next) => {
 })
 
 // index
-router.get('/opensurveys', (req, res, next) => {
-  OpenSurvey.find()
-    .populate('openResponses')
-    .then(opensurveys => {
-      // `opensurveys` will be an array of Mongoose documents
+router.get('/questions', (req, res, next) => {
+  Question.find()
+    .populate('paragraphs')
+    .then(questions => {
+      // `questions` will be an array of Mongoose documents
       // we want to convert each one to a POJO, so we use `.map` to
       // apply `.toObject` to each one
-      return opensurveys.map(opensurvey => opensurvey.toObject())
+      return questions.map(question => question.toObject())
     })
-    // respond with status 200 and JSON of the opensurveys
-    .then(opensurveys => res.status(200).json({ opensurveys: opensurveys }))
+    // respond with status 200 and JSON of the questions
+    .then(questions => res.status(200).json({ questions: questions }))
     // if an error occurs, pass it to the handler
     .catch(next)
 })
 
 // SHOW
 // GET /examples/5a7db6c74d55bc51bdf39793
-router.get('/opensurveys/:id', (req, res, next) => {
+router.get('/questions/:id', (req, res, next) => {
   // req.params.id will be set based on the `:id` in the route
-  OpenSurvey.findById(req.params.id)
+  Question.findById(req.params.id)
     .then(handle404)
-    // if `findById` is succesful, respond with 200 and "opensurvey" JSON
-    .then(opensurvey => res.status(200).json({ opensurvey: opensurvey.toObject() }))
+    // if `findById` is succesful, respond with 200 and "question" JSON
+    .then(question => res.status(200).json({ question: question.toObject() }))
     // if an error occurs, pass it to the handler
     .catch(next)
 })
 
 // UPDATE
 // PATCH /examples/5a7db6c74d55bc51bdf39793
-router.patch('/opensurveys/:id', requireToken, removeBlanks, (req, res, next) => {
+router.patch('/questions/:id', requireToken, removeBlanks, (req, res, next) => {
   // if the client attempts to change the `owner` property by including a new
   // owner, prevent that by deleting that key/value pair
-  delete req.body.opensurvey.owner
+  delete req.body.question.owner
 
-  OpenSurvey.findById(req.params.id)
+  Question.findById(req.params.id)
     .then(handle404)
-    .then(opensurvey => {
+    .then(question => {
       // pass the `req` object and the Mongoose record to `requireOwnership`
       // it will throw an error if the current user isn't the owner
-      requireOwnership(req, opensurvey)
+      requireOwnership(req, question)
 
       // pass the result of Mongoose's `.update` to the next `.then`
-      return opensurvey.update(req.body.opensurvey)
+      return question.update(req.body.question)
     })
     // if that succeeded, return 204 and no JSON
     .then(() => res.sendStatus(204))
@@ -97,14 +97,14 @@ router.patch('/opensurveys/:id', requireToken, removeBlanks, (req, res, next) =>
 
 // DESTROY
 // DELETE /examples/5a7db6c74d55bc51bdf39793
-router.delete('/opensurveys/:id', requireToken, (req, res, next) => {
-  OpenSurvey.findById(req.params.id)
+router.delete('/questions/:id', requireToken, (req, res, next) => {
+  Question.findById(req.params.id)
     .then(handle404)
-    .then(opensurvey => {
-      // throw an error if current user doesn't own `opensurvey`
-      requireOwnership(req, opensurvey)
-      // delete the opensurvey ONLY IF the above didn't throw
-      opensurvey.remove()
+    .then(question => {
+      // throw an error if current user doesn't own `question`
+      requireOwnership(req, question)
+      // delete the question ONLY IF the above didn't throw
+      question.remove()
     })
     // send back 204 and no content if the deletion succeeded
     .then(() => res.sendStatus(204))

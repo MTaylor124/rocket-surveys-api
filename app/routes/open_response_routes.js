@@ -61,26 +61,26 @@ router.get('/openresponses/:id', requireToken, (req, res, next) => {
 // CREATE
 // POST /openresponses
 router.post('/openresponses', requireToken, (req, res, next) => {
-  // set owner of new openresponse to be current user
+//  console.log(req.body)
+
   req.body.openresponse.owner = req.user.id
   let opensurveyId = req.body.openresponse.opensurvey
+  // console.log(req.body.openresponse.opensurvey)
   let openresponse = req.body.openresponse
+
   OpenResponse.create(req.body.openresponse)
-    // respond to succesful `create` with status 201 and JSON of new "openresponse"
     .then(openresponse => {
+      // console.log(openresponse)
+
       OpenSurvey.findById(opensurveyId)
         .then(foundOpenSurvey => {
-          foundOpenSurvey.openresponses.push(openresponse._id)
-          let opensurvey = foundOpenSurvey
-          return foundOpenSurvey.update(opensurvey)
+          foundOpenSurvey.openResponses.push(openresponse._id)
+          return foundOpenSurvey.save()
         })
     })
     .then(() => {
       res.status(201).json({openresponse})
     })
-    // if an error occurs, pass it off to our error handler
-    // the error handler needs the error message and the `res` object so that it
-    // can send an error message back to the client
     .catch(next)
 })
 
